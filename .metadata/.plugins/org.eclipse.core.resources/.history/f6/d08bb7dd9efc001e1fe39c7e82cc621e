@@ -1,0 +1,48 @@
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.io.File;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+
+public class Client {
+
+	public static void main(String[] args) {
+
+		File fileToSend;
+		
+		JFrame jFrame  = new JFrame("Flie Sending Client");
+		jFrame.setSize(450, 450);
+		jFrame.setLayout(new BoxLayout(jFrame.getContentPane(),BoxLayout.Y_AXIS));
+		jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		JLabel jTitle = new JLabel("File Sharing Application Client Side");
+		jTitle.setFont(new Font("Arial",Font.BOLD,25));
+		jTitle.setBorder(new EmptyBorder(20,0,10,0));
+		jTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+		
+		JLabel jFileName = new JLabel("Choose a file to send");
+		jFileName.setFont(new Font("Arial",Font.BOLD,20));
+		jFileName.setBorder(new EmptyBorder(50,0,0,0));
+		jFileName.setAlignmentX(Component.CENTER_ALIGNMENT);
+		
+		JPanel jpButton = new JPanel();
+		jpButton.setBorder(new EmptyBorder(75,0,10,0));
+		
+		JButton jbSendButton = new JButton("Send File");
+		jbSendButton.setPreferredSize(new Dimension(150,75));
+		jbSendButton.setFont(new Font("Arial",Font.BOLD,20));
+		
+		JButton jbChooseButton = new JButton("Choose File");
+		jbChooseButton.setPreferredSize(new Dimension(150,75));
+		jbChooseButton.setFont(new Font("Arial",Font.BOLD,20));
+		
+		jpButton.add(jbSendButton);
+		jpButton.add(jbChooseButton);
+		
+		
+
+	}
+
+}
