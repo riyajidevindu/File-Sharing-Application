@@ -9,11 +9,19 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import javax.swing.*;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 
 public class Server {
@@ -22,6 +30,11 @@ public class Server {
 	
 	public static void main(String[] args) throws IOException {
 		int fileId = 0;
+	    String fileName = "";
+	    byte[] fileContentBytes = null ;
+	    int fileContentLength = 1;
+	    int currentClient = 1;
+		
 		
 		JFrame jFrame = new JFrame("Flie Sending Server");
 		jFrame.setSize(400,400);
@@ -44,6 +57,8 @@ public class Server {
 		jFrame.setVisible(true);
 		
 		
+		System.out.println("File Server Started."); 
+		
 		ServerSocket serverSocket = new ServerSocket(1234);
 		
 		while(true) {
@@ -51,21 +66,25 @@ public class Server {
 				
 				Socket socket = serverSocket.accept();
 				
-				DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
+				DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());				
 				
-				int fileNameLength = dataInputStream.readInt();
+				System.out.println("Assigning new thread for this client"); 
 				
-				if(fileNameLength>0) {
-					byte[] fileNameBytes = new byte[fileNameLength];
-					dataInputStream.readFully(fileNameBytes, 0, fileNameBytes.length);
-					String fileName = new String(fileNameBytes);
-					
-					int fileContentLength = dataInputStream.readInt();
+				ClientHandler t = new ClientHandler(socket,dataInputStream,currentClient);
+				
+				t.start();		
+				
+				currentClient++;
+	
+				fileName = t.getFileName();
+				fileContentBytes = t.getFileContentBytes();
+				fileContentLength = t.getFileContentLength();
+				
+				System.out.println(fileContentLength); 			
 					
 					if(fileContentLength>0) {
-						byte[] fileContentBytes = new byte[fileContentLength];
-						dataInputStream.readFully(fileContentBytes,0,fileContentLength);
 						
+						System.out.println(fileContentLength); 
 						JPanel jpFileRow = new  JPanel();
 						jpFileRow.setLayout(new BoxLayout(jpFileRow,BoxLayout.Y_AXIS));
 						
@@ -94,7 +113,9 @@ public class Server {
 						
 						fileId++;
 					}
-				}
+					
+				
+				//serverSocket.close();
 				
 			}catch(IOException error) {
 				error.printStackTrace();
@@ -189,25 +210,26 @@ public class Server {
 		}
 		
 		jbYes.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				File fileToDownlaod = new File(fileName);
-				
-				try {
-					FileOutputStream fileOutputStream = new FileOutputStream(fileToDownlaod);
-					fileOutputStream.write(fileData);
-					fileOutputStream.close();
-					
-					jFrame.dispose();
-				}catch(IOException error) {
-					error.printStackTrace();
-				}
-				
-			}
-			
+		    @Override
+		    public void actionPerformed(ActionEvent e) {
+		        JFileChooser fileChooser = new JFileChooser();
+		        int result = fileChooser.showSaveDialog(null); // Show the save dialog
+		        
+		        if (result == JFileChooser.APPROVE_OPTION) {
+		            File selectedFile = fileChooser.getSelectedFile();
+		            try {
+		                FileOutputStream fileOutputStream = new FileOutputStream(selectedFile);
+		                fileOutputStream.write(fileData);
+		                fileOutputStream.close();
+		                
+		                jFrame.dispose();
+		            } catch (IOException error) {
+		                error.printStackTrace();
+		            }
+		        }
+		    }
 		});
-		
+
 		jbNo.addActionListener(new ActionListener() {
 
 			@Override

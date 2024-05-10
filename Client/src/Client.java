@@ -70,6 +70,7 @@ public class Client {
 					FileInputStream fileInputStream;
 					try {
 						fileInputStream = new FileInputStream(fileToSend[0].getAbsolutePath());
+						
 						Socket socket = new Socket("localhost",1234);
 						
 						DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
